@@ -1,0 +1,127 @@
+@import './base.css';
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  background-image: url('./wavy-lines.svg');
+  background-size: cover;
+  user-select: none;
+
+  --main-bg-color: rgb(34, 34, 34);
+  --main-bg-color-light: rgb(68, 73, 85);
+
+  --main-text-color: rgb(244, 241, 222);
+  --disabled-text-color: rgb(177, 182, 189);
+
+  --main-accent-color-pink: rgb(189, 36, 247);
+  --main-accent-color-pink-dark: rgb(178, 0, 178);
+  --main-accent-color-blue: rgb(107, 130, 247);
+  --main-accent-color-blue-dark: rgb(0, 0, 178);
+
+  --white-color: rgb(244, 241, 222);
+  --black-color: rgb(25, 23, 22);
+  --gray-color: rgb(125, 140, 140);
+  --blue-color: rgb(32, 164, 243);
+  --shadow-color: rgba(33, 33, 33, 0.403);
+  --success-green: rgb(75, 181, 67);
+  --success-green-dark: rgb(58, 139, 52);
+  --warning-yellow: rgb(254, 195, 10);
+  --warning-yellow-dark: rgb(254, 179, 0);
+  --error-red: rgb(219, 68, 55);
+  --error-red-dark: rgb(178, 0, 0);
+
+  --primary-button-color: rgb(78, 147, 122);
+
+  --font-size-h1: 48px;
+  --font-size-h2: 36px;
+  --font-size-h3: 24px;
+  --font-size-p: 18px;
+  --font-size-small: 14px;
+}
+
+#app {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* prevents overflow from children */
+  padding: 0.01px; /* prevents margin collapse without visual effect */
+}
+
+.button-primary {
+  background-color: #4caf84;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+  max-height: 40px;
+}
+.button-primary:hover {
+  background-color: #3f926e;
+}
+.button-primary:active {
+  background-color: #2c3e50;
+  color: #4caf84;
+}
+.button-primary:disabled {
+  background-color: #ccc;
+  color: #fff;
+}
+
+.button-secondary {
+  background-color: transparent;
+  color: #ffffff;
+  border: solid 1px #ffffff;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  max-height: 40px;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+.button-secondary:hover {
+  background-color: #fff;
+  color: #4caf84;
+}
+.button-secondary:active {
+  background-color: #2c3e50;
+  color: #4caf84;
+}
+.button-secondary:disabled {
+  background-color: #ccc;
+  color: #fff;
+}
+
+.button-error {
+  background-color: #ef3933;
+  max-height: 40px;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+.button-error:hover {
+  background-color: #ff8000;
+}
+.button-error:active {
+  background-color: #2c3e50;
+  color: #4caf84;
+}
+.button-error:disabled {
+  background-color: #ccc;
+  color: #fff;
+}
