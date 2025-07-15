@@ -3,7 +3,7 @@
   import ConsoleOutput from '../../components/console-output/ConsoleOutput.svelte'
   import { onMount, onDestroy } from 'svelte'
   const { ipcRenderer } = require('electron')
-  const { ws } = $props()
+  let { ws, currentCode = $bindable('') } = $props()
 
   let monacoEditor
   let isBussy = $state(false)
@@ -61,7 +61,7 @@
 </script>
 
 <div class="code-screen">
-  <MonacoEditor bind:this={monacoEditor} bind:isBussy />
+  <MonacoEditor bind:this={monacoEditor} bind:isBussy bind:currentCode />
   <ConsoleOutput bind:logs />
   <div class="button-container">
     <div style="display: flex; gap: 1rem;">

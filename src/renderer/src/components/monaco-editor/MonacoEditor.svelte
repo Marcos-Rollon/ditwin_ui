@@ -2,6 +2,141 @@
   import * as monaco from 'monaco-editor'
   import LoadingIndicator from '../loading-indicator/LoadingIndicator.svelte'
   import { onMount } from 'svelte'
+  //import { clipboard } from 'electron'
+  // Import workers as URLs using Vite's worker handling
+  import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
+  import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
+  import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
+  import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
+  import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
+
+  self.MonacoEnvironment = {
+    getWorker: function (moduleId, label) {
+      switch (label) {
+        case 'json':
+          return new jsonWorker()
+        case 'css':
+        case 'scss':
+        case 'less':
+          return new cssWorker()
+        case 'html':
+        case 'handlebars':
+        case 'razor':
+          return new htmlWorker()
+        case 'typescript':
+        case 'javascript':
+          return new tsWorker()
+        default:
+          return new editorWorker()
+      }
+    }
+  }
+
+  let container
+  let editor
+
+  let { currentCode = $bindable(''), isBussy = false } = $props()
+
+  // Helper function to check if it's Mac
+  const isMac = () => {
+    return typeof navigator !== 'undefined' && navigator.platform.toUpperCase().indexOf('MAC') >= 0
+  }
+
+  const handleEditorKeyDown = async (e) => {
+    const isCtrlOrCmd = isMac() ? e.metaKey : e.ctrlKey
+    const key = e.browserEvent.key.toLowerCase()
+    if (!isCtrlOrCmd) return
+
+    switch (key) {
+      case 'c':
+        if (editor.hasTextFocus()) {
+          const selection = editor.getSelection()
+          if (selection && !selection.isEmpty()) {
+            const selectedText = editor.getModel().getValueInRange(selection)
+            try {
+              navigator.clipboard.writeText(selectedText)
+            } catch {
+              await navigator.clipboard.writeText(selectedText)
+            }
+            console.log('Copying text to clipboard', selectedText)
+            e.preventDefault()
+          }
+        }
+        break
+
+      case 'v':
+        if (editor.hasTextFocus()) {
+          e.preventDefault()
+          let pasted = ''
+
+          pasted = await navigator.clipboard.readText()
+
+          if (pasted) {
+            console.log('Pasting text from clipboard', pasted)
+            const selection = editor.getSelection()
+            editor.executeEdits('paste', [
+              {
+                range: selection,
+                text: pasted,
+                forceMoveMarkers: true
+              }
+            ])
+            currentCode = editor.getValue()
+          }
+        }
+        break
+    }
+  }
+
+  export function getCode() {
+    return currentCode
+  }
+
+  export function setCode(code) {
+    currentCode = code
+    if (editor) {
+      editor.setValue(code)
+    }
+  }
+
+  onMount(() => {
+    editor = monaco.editor.create(container, {
+      value: currentCode, // Use the persistent state instead of defaultInitialCode
+      language: 'javascript',
+      theme: 'vs-dark',
+      scrollbar: {
+        vertical: 'hidden'
+      }
+    })
+
+    // Listen for content changes and update the persistent state
+    editor.onDidChangeModelContent(() => {
+      currentCode = editor.getValue()
+    })
+    // Add keyboard event listener to the document
+    // Attach Monaco-native keydown handler
+    editor.onKeyDown(handleEditorKeyDown)
+
+    // Cleanup on destroy
+    return () => {
+      editor.dispose()
+    }
+  })
+</script>
+
+<div class="container">
+  <div class="bussy-indicator {isBussy ? '' : 'hidden'}">
+    <LoadingIndicator />
+    <h2>Your code is running...</h2>
+    <p>You can stop the execution at any time by clicking the "Stop" button.</p>
+  </div>
+  <div bind:this={container} style="height: 100%; width: 100%; position:absolute;"></div>
+</div>
+
+<!-- <script>
+  import * as monaco from 'monaco-editor'
+  import LoadingIndicator from '../loading-indicator/LoadingIndicator.svelte'
+  import { onMount } from 'svelte'
 
   // Import workers as URLs using Vite's worker handling
   import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
@@ -132,6 +267,35 @@ CLOSE_GRIP()
   </div>
   <div bind:this={container} style="height: 100%; width: 100%; position:absolute;"></div>
 </div>
+
+<style>
+  .container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    position: relative;
+  }
+
+  .bussy-indicator {
+    height: 100%;
+    width: 100%;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #7d7d7d87;
+    position: absolute;
+    z-index: 10;
+  }
+  .bussy-indicator p {
+    text-align: center;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style> -->
 
 <style>
   .container {

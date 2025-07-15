@@ -40,10 +40,17 @@
     controlScreenController.enviroments = json
   })
 
+  const defaultInitialCode = `RESET_ENVIROMENT()
+WRITE(0,true)
+WAIT(0,true)
+WRITE(0,false)
+  `
+
   // State
   let selectedTabIndex = $state(0)
   let online = $state(false)
   const controlScreenController = new ControlScreenController(ws)
+  let currentCode = $state(defaultInitialCode)
 </script>
 
 <Header bind:online />
@@ -73,7 +80,7 @@
       <ControlScreen controller={controlScreenController} />
     {/if}
     {#if selectedTabIndex === 1}
-      <CodeScreen {ws} />
+      <CodeScreen {ws} bind:currentCode />
     {/if}
     {#if selectedTabIndex === 2}
       <AboutScreen />

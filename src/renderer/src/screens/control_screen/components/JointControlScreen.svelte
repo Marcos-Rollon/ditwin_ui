@@ -21,7 +21,7 @@
       <AnimatedButton
         type="send"
         label="Send"
-        onclick={controller.onPoseSendButtonClicked}
+        onclick={controller.onJointsSendButtonClicked}
         disabled={controller.isMoving}
       />
       <!-- <button
